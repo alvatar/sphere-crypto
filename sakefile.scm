@@ -1,20 +1,23 @@
+(define modules
+  '(digest))
+
 (define-task compile ()
-  (for-each (lambda (m) (sake:compile-c-to-o (sake:compile-to-c m)))
+  (for-each (lambda (m)
+              ;(sake#compile-module m cond-expand-features: '(debug) version: '(debug))
+              (sake#compile-module m cond-expand-features: '(optimize)))
             modules))
 
-(define-task test ()
-  (sake:test-all))
-
-(define-task clean ()
-  (sake:default-clean))
+(define-task post-compile ()
+  (for-each (lambda (m) (sake#make-module-available m versions: '(() (debug)))) modules))
 
 (define-task install ()
-  ;; Install compiled module files
-  (for-each sake:install-compiled-module modules)
-  (sake:install-system-sphere))
+  (sake#install-sphere-to-system))
 
-(define-task uninstall ()
-  (sake:uninstall-system-sphere))
+(define-task test ()
+  (sake#test-all))
 
-(define-task all (compile install)
+(define-task clean ()
+  (sake#default-clean))
+
+(define-task all (compile post-compile)
   'all)
