@@ -1,7 +1,7 @@
 ;;; Copyright (C) 2005-2009 by Marc Feeley, All Rights Reserved. Apache+LGPL license.
 ;;; Modified by Per Eckerdal to adapt it for Black Hole 2008. MIT license.
 ;;; Minor modifications by Mikael More 2011, 2013, 2014. MIT license.
-;;; Minor modifications by Álvaro Castro-Castilla 2014.
+;;; Ported to syntax-rules and rsc-macro-transformer by Álvaro Castro-Castilla 2014.
 
 ;; Compiling this module tends to be comparably very RAM-consuming, making GCC require up to 2.5GB.
 ;;
@@ -97,10 +97,77 @@
  (else (void)))
 
 
+;; Selective removal of typechecks.
+
+;; (define-macro (fx+ #!rest args) `(##fx+ ,@args))
+;; (define-macro (fx- #!rest args) `(##fx- ,@args))
+;; (define-macro (fx* #!rest args) `(##fx* ,@args))
+;; (define-macro (fxquotient #!rest args) `(##fxquotient ,@args))
+;; (define-macro (fxmin #!rest args) `(##fxmin ,@args))
+;; (define-macro (fx= #!rest args) `(##fx= ,@args))
+;; (define-macro (fx< #!rest args) `(##fx< ,@args))
+;; (define-macro (fx> #!rest args) `(##fx> ,@args))
+;; (define-macro (fx<= #!rest args) `(##fx<= ,@args))
+;; (define-macro (fx>= #!rest args) `(##fx>= ,@args))
+;; (define-macro (fxnot #!rest args) `(##fxnot ,@args))
+;; (define-macro (fxand #!rest args) `(##fxand ,@args))
+;; (define-macro (fxior #!rest args) `(##fxior ,@args))
+;; (define-macro (fxxor #!rest args) `(##fxxor ,@args))
+;; (define-macro (fxarithmetic-shift-right #!rest args) `(##fxarithmetic-shift-right ,@args))
+;; (define-macro (fxarithmetic-shift-left #!rest args) `(##fxarithmetic-shift-left ,@args))
+;; (define-macro (make-vector #!rest args) `(##make-vector ,@args))
+;; (define-macro (vector-ref #!rest args) `(##vector-ref ,@args)) ; Added 2011-10-30
+;; (define-macro (vector-set! #!rest args) `(##vector-set! ,@args)) ; Added 2011-10-30
+;; (define-macro (make-u8vector #!rest args) `(##make-u8vector ,@args))
+;; (define-macro (u8vector #!rest args) `(##u8vector ,@args))
+;; (define-macro (u8vector-length #!rest args) `(##u8vector-length ,@args))
+;; (define-macro (u8vector-ref #!rest args) `(##u8vector-ref ,@args))
+;; (define-macro (u8vector-set! #!rest args) `(##u8vector-set! ,@args))
+;; (define-macro (read-subu8vector #!rest args) `(##read-subu8vector ,@args))
+;; (define-macro (string-append #!rest args) `(##string-append ,@args))
+;; (define-macro (make-string #!rest args) `(##make-string ,@args))
+;; (define-macro (open-input-file #!rest args) `(##open-input-file ,@args))
+;; (define-macro (close-input-port #!rest args) `(##close-input-port ,@args))
+;; (define-macro (number->string #!rest args) `(##number->string ,@args))
+
+(define-syntax fx+ (syntax-rules () ((_ . args) (##fx+ . args))))
+(define-syntax fx- (syntax-rules () ((_ . args) (##fx- . args))))
+(define-syntax fx* (rsc-macro-transformer (lambda (form env) `(##fx* ,@(cdr form)))))
+(define-syntax fxquotient (syntax-rules () ((_ . args) (##fxquotient . args))))
+(define-syntax fxmin (syntax-rules () ((_ . args) (##fxmin . args))))
+(define-syntax fx= (syntax-rules () ((_ . args) (##fx= . args))))
+(define-syntax fx< (syntax-rules () ((_ . args) (##fx< . args))))
+(define-syntax fx> (syntax-rules () ((_ . args) (##fx> . args))))
+(define-syntax fx<= (syntax-rules () ((_ . args) (##fx<= . args))))
+(define-syntax fx>= (syntax-rules () ((_ . args) (##fx>= . args))))
+(define-syntax fxnot (syntax-rules () ((_ . args) (##fxnot . args))))
+(define-syntax fxand (syntax-rules () ((_ . args) (##fxand . args))))
+(define-syntax fxior (syntax-rules () ((_ . args) (##fxior . args))))
+(define-syntax fxxor (syntax-rules () ((_ . args) (##fxxor . args))))
+(define-syntax fxarithmetic-shift-right (syntax-rules () ((_ . args) (##fxarithmetic-shift-right . args))))
+(define-syntax fxarithmetic-shift-left (syntax-rules () ((_ . args) (##fxarithmetic-shift-left . args))))
+(define-syntax make-vector (syntax-rules () ((_ . args) (##make-vector . args))))
+(define-syntax vector-ref (syntax-rules () ((_ . args) (##vector-ref . args))))
+(define-syntax vector-set! (syntax-rules () ((_ . args) (##vector-set! . args))))
+(define-syntax make-u8vector (syntax-rules () ((_ . args) (##make-u8vector . args))))
+(define-syntax u8vector (syntax-rules () ((_ . args) (##u8vector . args))))
+(define-syntax u8vector-length (syntax-rules () ((_ . args) (##u8vector-length . args))))
+(define-syntax u8vector-ref (syntax-rules () ((_ . args) (##u8vector-ref . args))))
+(define-syntax u8vector-set! (syntax-rules () ((_ . args) (##u8vector-set! . args))))
+(define-syntax read-subu8vector (syntax-rules () ((_ . args) (##read-subu8vector . args))))
+(define-syntax string-append (syntax-rules () ((_ . args) (##string-append . args))))
+(define-syntax make-string (syntax-rules () ((_ . args) (##make-string . args))))
+(define-syntax open-input-file (syntax-rules () ((_ . args) (##open-input-file . args))))
+(define-syntax close-input-port (syntax-rules () ((_ . args) (##close-input-port . args))))
+(define-syntax number->string (syntax-rules () ((_ . args) (##number->string . args))))
+
+
 ;;------------------------------------------------------------------------------
 ;;!! High-level API
 
-(define-macro (digest-default-result-type) ''hex)
+;;(define-macro (digest-default-result-type) ''hex)
+(define-syntax digest-default-result-type
+  (syntax-rules () ((_) 'hex)))
 
 ;;! Core procedures for digest generation
 (define* (digest-u8vector u8vect
@@ -330,39 +397,6 @@
    4))
 
 
-;; Selective removal of typechecks.
-
-(define-macro (fx+ #!rest args) `(##fx+ ,@args))
-(define-macro (fx- #!rest args) `(##fx- ,@args))
-(define-macro (fx* #!rest args) `(##fx* ,@args))
-(define-macro (fxquotient #!rest args) `(##fxquotient ,@args))
-(define-macro (fxmin #!rest args) `(##fxmin ,@args))
-(define-macro (fx= #!rest args) `(##fx= ,@args))
-(define-macro (fx< #!rest args) `(##fx< ,@args))
-(define-macro (fx> #!rest args) `(##fx> ,@args))
-(define-macro (fx<= #!rest args) `(##fx<= ,@args))
-(define-macro (fx>= #!rest args) `(##fx>= ,@args))
-(define-macro (fxnot #!rest args) `(##fxnot ,@args))
-(define-macro (fxand #!rest args) `(##fxand ,@args))
-(define-macro (fxior #!rest args) `(##fxior ,@args))
-(define-macro (fxxor #!rest args) `(##fxxor ,@args))
-(define-macro (fxarithmetic-shift-right #!rest args) `(##fxarithmetic-shift-right ,@args))
-(define-macro (fxarithmetic-shift-left #!rest args) `(##fxarithmetic-shift-left ,@args))
-(define-macro (make-vector #!rest args) `(##make-vector ,@args))
-(define-macro (vector-ref #!rest args) `(##vector-ref ,@args)) ; Added 2011-10-30
-(define-macro (vector-set! #!rest args) `(##vector-set! ,@args)) ; Added 2011-10-30
-(define-macro (make-u8vector #!rest args) `(##make-u8vector ,@args))
-(define-macro (u8vector #!rest args) `(##u8vector ,@args))
-(define-macro (u8vector-length #!rest args) `(##u8vector-length ,@args))
-(define-macro (u8vector-ref #!rest args) `(##u8vector-ref ,@args))
-(define-macro (u8vector-set! #!rest args) `(##u8vector-set! ,@args))
-(define-macro (read-subu8vector #!rest args) `(##read-subu8vector ,@args))
-(define-macro (string-append #!rest args) `(##string-append ,@args))
-(define-macro (make-string #!rest args) `(##make-string ,@args))
-(define-macro (open-input-file #!rest args) `(##open-input-file ,@args))
-(define-macro (close-input-port #!rest args) `(##close-input-port ,@args))
-(define-macro (number->string #!rest args) `(##number->string ,@args))
-
 ;;;-----------------------------------------------------------------------------
 
 (define-type digest
@@ -575,117 +609,282 @@
             (u8vector-set! u8vect j2 (fxand #xff x))
             (loop (fx- i 1) (fx- j 2)))))))
 
-(define-macro (LO var)
-  (string->symbol
-   (string-append (symbol->string var) "-" (symbol->string 'L))))
+;; (define-macro (LO var)
+;;   (string->symbol
+;;    (string-append (symbol->string var) "-" (symbol->string 'L))))
+(define-syntax LO
+  (rsc-macro-transformer
+   (lambda (form env)
+     (string->symbol (string-append (symbol->string (cadr form)) "-" (symbol->string 'L))))))
 
-(define-macro (HI var)
-  (string->symbol
-   (string-append (symbol->string var) "-" (symbol->string 'H))))
+;; (define-macro (HI var)
+;;   (string->symbol
+;;    (string-append (symbol->string var) "-" (symbol->string 'H))))
+(define-syntax HI
+  (rsc-macro-transformer
+   (lambda (form env)
+     (string->symbol (string-append (symbol->string (cadr form)) "-" (symbol->string 'H))))))
 
-(define-macro (wlet var lo hi body)
-  `(let ((,(string->symbol
-            (string-append (symbol->string var) "-" (symbol->string 'L)))
-          ,lo)
-         (,(string->symbol
-            (string-append (symbol->string var) "-" (symbol->string 'H)))
-          ,hi))
-     ,body))
+;; (define-macro (wlet var lo hi body)
+;;   `(let ((,(string->symbol
+;;             (string-append (symbol->string var) "-" (symbol->string 'L)))
+;;           ,lo)
+;;          (,(string->symbol
+;;             (string-append (symbol->string var) "-" (symbol->string 'H)))
+;;           ,hi))
+;;      ,body))
+(define-syntax wlet
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((var (list-ref form 1))
+           (lo (list-ref form 2))
+           (hi (list-ref form 3))
+           (body (list-ref form 4)))
+       `(let ((,(string->symbol
+                 (string-append (symbol->string var) "-" (symbol->string 'L)))
+               ,lo)
+              (,(string->symbol
+                 (string-append (symbol->string var) "-" (symbol->string 'H)))
+               ,hi))
+          ,body)))))
 
-(define-macro (cast-u16 x)
-  `(fxand #xffff ,x))
+;; (define-macro (cast-u16 x)
+;;   `(fxand #xffff ,x))
+(define-syntax cast-u16
+  (rsc-macro-transformer
+   (lambda (form env)
+     `(fxand #xffff ,(cadr form)))))
 
-(define-macro (shift-left-u16 n shift)
-  `(fxarithmetic-shift-left
-    (fxand ,n ,(fx- (expt 2 (fx- 16 shift)) 1))
-    ,shift))
+;; (define-macro (shift-left-u16 n shift)
+;;   `(fxarithmetic-shift-left
+;;     (fxand ,n ,(fx- (expt 2 (fx- 16 shift)) 1))
+;;     ,shift))
+(define-syntax shift-left-u16
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((n (cadr form))
+           (shift (caddr form)))
+       `(fxarithmetic-shift-left
+         (fxand ,n ,(fx- (expt 2 (fx- 16 shift)) 1))
+         ,shift)))))
 
-(define-macro (wshr dst w r body)
-  (if (fx< r 16)
-      `(wlet ,dst
-             (fxior
-              (fxarithmetic-shift-right (LO ,w) ,r)
-              (shift-left-u16 (HI ,w) ,(fx- 16 r)))
-             (fxarithmetic-shift-right (HI ,w) ,r)
-             ,body)
-      `(wlet ,dst
-             (fxarithmetic-shift-right (HI ,w) ,(fx- r 16))
-             0
-             ,body)))
+;; (define-macro (wshr dst w r body)
+;;   (if (fx< r 16)
+;;       `(wlet ,dst
+;;              (fxior
+;;               (fxarithmetic-shift-right (LO ,w) ,r)
+;;               (shift-left-u16 (HI ,w) ,(fx- 16 r)))
+;;              (fxarithmetic-shift-right (HI ,w) ,r)
+;;              ,body)
+;;       `(wlet ,dst
+;;              (fxarithmetic-shift-right (HI ,w) ,(fx- r 16))
+;;              0
+;;              ,body)))
+(define-syntax wshr
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (w (list-ref form 2))
+           (r (list-ref form 3))
+           (body (list-ref form 4)))
+       (if (fx< r 16)
+           `(wlet ,dst
+                  (fxior
+                   (fxarithmetic-shift-right (LO ,w) ,r)
+                   (shift-left-u16 (HI ,w) ,(fx- 16 r)))
+                  (fxarithmetic-shift-right (HI ,w) ,r)
+                  ,body)
+           `(wlet ,dst
+                  (fxarithmetic-shift-right (HI ,w) ,(fx- r 16))
+                  0
+                  ,body))))))
 
-(define-macro (wrot dst w r body)
-  (if (fx< r 16)
-      `(wlet ,dst
-             (fxior
-              (shift-left-u16 (LO ,w) ,r)
-              (fxarithmetic-shift-right (HI ,w) ,(fx- 16 r)))
-             (fxior
-              (shift-left-u16 (HI ,w) ,r)
-              (fxarithmetic-shift-right (LO ,w) ,(fx- 16 r)))
-             ,body)
-      `(wlet ,dst
-             (fxior
-              (shift-left-u16 (HI ,w) ,(fx- r 16))
-              (fxarithmetic-shift-right (LO ,w) ,(fx- 32 r)))
-             (fxior
-              (shift-left-u16 (LO ,w) ,(fx- r 16))
-              (fxarithmetic-shift-right (HI ,w) ,(fx- 32 r)))
-             ,body)))
+;; (define-macro (wrot dst w r body)
+;;   (if (fx< r 16)
+;;       `(wlet ,dst
+;;              (fxior
+;;               (shift-left-u16 (LO ,w) ,r)
+;;               (fxarithmetic-shift-right (HI ,w) ,(fx- 16 r)))
+;;              (fxior
+;;               (shift-left-u16 (HI ,w) ,r)
+;;               (fxarithmetic-shift-right (LO ,w) ,(fx- 16 r)))
+;;              ,body)
+;;       `(wlet ,dst
+;;              (fxior
+;;               (shift-left-u16 (HI ,w) ,(fx- r 16))
+;;               (fxarithmetic-shift-right (LO ,w) ,(fx- 32 r)))
+;;              (fxior
+;;               (shift-left-u16 (LO ,w) ,(fx- r 16))
+;;               (fxarithmetic-shift-right (HI ,w) ,(fx- 32 r)))
+;;              ,body)))
+(define-syntax wrot
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (w (list-ref form 2))
+           (r (list-ref form 3))
+           (body (list-ref form 4)))
+       (if (fx< r 16)
+           `(wlet ,dst
+                  (fxior
+                   (shift-left-u16 (LO ,w) ,r)
+                   (fxarithmetic-shift-right (HI ,w) ,(fx- 16 r)))
+                  (fxior
+                   (shift-left-u16 (HI ,w) ,r)
+                   (fxarithmetic-shift-right (LO ,w) ,(fx- 16 r)))
+                  ,body)
+           `(wlet ,dst
+                  (fxior
+                   (shift-left-u16 (HI ,w) ,(fx- r 16))
+                   (fxarithmetic-shift-right (LO ,w) ,(fx- 32 r)))
+                  (fxior
+                   (shift-left-u16 (LO ,w) ,(fx- r 16))
+                   (fxarithmetic-shift-right (HI ,w) ,(fx- 32 r)))
+                  ,body))))))
 
-(define-macro (wadd dst a b body)
-  `(wlet R
-         (fx+ (LO ,a) (LO ,b))
-         (fx+ (HI ,a) (HI ,b))
-         (wlet ,dst
-               (cast-u16 (LO R))
-               (cast-u16
-                (fx+ (HI R)
-                     (fxarithmetic-shift-right (LO R) 16)))
-               ,body)))
+;; (define-macro (wadd dst a b body)
+;;   `(wlet R
+;;          (fx+ (LO ,a) (LO ,b))
+;;          (fx+ (HI ,a) (HI ,b))
+;;          (wlet ,dst
+;;                (cast-u16 (LO R))
+;;                (cast-u16
+;;                 (fx+ (HI R)
+;;                      (fxarithmetic-shift-right (LO R) 16)))
+;;                ,body)))
+(define-syntax wadd
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (a (list-ref form 2))
+           (b (list-ref form 3))
+           (body (list-ref form 4)))
+       `(wlet R
+              (fx+ (LO ,a) (LO ,b))
+              (fx+ (HI ,a) (HI ,b))
+              (wlet ,dst
+                    (cast-u16 (LO R))
+                    (cast-u16
+                     (fx+ (HI R)
+                          (fxarithmetic-shift-right (LO R) 16)))
+                    ,body))))))
 
-(define-macro (wxor dst a b body)
-  `(wlet ,dst
-         (fxxor (LO ,a) (LO ,b))
-         (fxxor (HI ,a) (HI ,b))
-         ,body))
+;; (define-macro (wxor dst a b body)
+;;   `(wlet ,dst
+;;          (fxxor (LO ,a) (LO ,b))
+;;          (fxxor (HI ,a) (HI ,b))
+;;          ,body))
+(define-syntax wxor
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (a (list-ref form 2))
+           (b (list-ref form 3))
+           (body (list-ref form 4)))
+       `(wlet ,dst
+              (fxxor (LO ,a) (LO ,b))
+              (fxxor (HI ,a) (HI ,b))
+              ,body)))))
 
-(define-macro (wior dst a b body)
-  `(wlet ,dst
-         (fxior (LO ,a) (LO ,b))
-         (fxior (HI ,a) (HI ,b))
-         ,body))
+;; (define-macro (wior dst a b body)
+;;   `(wlet ,dst
+;;          (fxior (LO ,a) (LO ,b))
+;;          (fxior (HI ,a) (HI ,b))
+;;          ,body))
+(define-syntax wior
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (a (list-ref form 2))
+           (b (list-ref form 3))
+           (body (list-ref form 4)))
+       `(wlet ,dst
+              (fxior (LO ,a) (LO ,b))
+              (fxior (HI ,a) (HI ,b))
+              ,body)))))
 
-(define-macro (wand dst a b body)
-  `(wlet ,dst
-         (fxand (LO ,a) (LO ,b))
-         (fxand (HI ,a) (HI ,b))
-         ,body))
 
-(define-macro (wnot dst a body)
-  `(wlet ,dst
-         (fxnot (LO ,a))
-         (fxnot (HI ,a))
-         ,body))
+;; (define-macro (wand dst a b body)
+;;   `(wlet ,dst
+;;          (fxand (LO ,a) (LO ,b))
+;;          (fxand (HI ,a) (HI ,b))
+;;          ,body))
+(define-syntax wand
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (a (list-ref form 2))
+           (b (list-ref form 3))
+           (body (list-ref form 4)))
+       `(wlet ,dst
+              (fxand (LO ,a) (LO ,b))
+              (fxand (HI ,a) (HI ,b))
+              ,body)))))
 
-(define-macro (wref dst v i body)
-  (if (number? i)
-      `(wlet ,dst
-             (vector-ref ,v ,(fx+ (fx* 2 i) 0))
-             (vector-ref ,v ,(fx+ (fx* 2 i) 1))
-             ,body)
-      `(wlet ,dst
-             (vector-ref ,v (fx+ (fx* 2 ,i) 0))
-             (vector-ref ,v (fx+ (fx* 2 ,i) 1))
-             ,body)))
+;; (define-macro (wnot dst a body)
+;;   `(wlet ,dst
+;;          (fxnot (LO ,a))
+;;          (fxnot (HI ,a))
+;;          ,body))
+(define-syntax wnot
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (a (list-ref form 2))
+           (body (list-ref form 3)))
+       `(wlet ,dst
+              (fxnot (LO ,a))
+              (fxnot (HI ,a))
+              ,body)))))
 
-(define-macro (wset v i x)
-  (if (number? i)
-      `(begin
-         (vector-set! ,v ,(fx+ (fx* 2 i) 0) (LO ,x))
-         (vector-set! ,v ,(fx+ (fx* 2 i) 1) (HI ,x)))
-      `(begin
-         (vector-set! ,v (fx+ (fx* 2 ,i) 0) (LO ,x))
-         (vector-set! ,v (fx+ (fx* 2 ,i) 1) (HI ,x)))))
+;; (define-macro (wref dst v i body)
+;;   (if (number? i)
+;;       `(wlet ,dst
+;;              (vector-ref ,v ,(fx+ (fx* 2 i) 0))
+;;              (vector-ref ,v ,(fx+ (fx* 2 i) 1))
+;;              ,body)
+;;       `(wlet ,dst
+;;              (vector-ref ,v (fx+ (fx* 2 ,i) 0))
+;;              (vector-ref ,v (fx+ (fx* 2 ,i) 1))
+;;              ,body)))
+(define-syntax wref
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (v (list-ref form 2))
+           (i (list-ref form 3))
+           (body (list-ref form 4)))
+       (if (number? i)
+           `(wlet ,dst
+                  (vector-ref ,v ,(fx+ (fx* 2 i) 0))
+                  (vector-ref ,v ,(fx+ (fx* 2 i) 1))
+                  ,body)
+           `(wlet ,dst
+                  (vector-ref ,v (fx+ (fx* 2 ,i) 0))
+                  (vector-ref ,v (fx+ (fx* 2 ,i) 1))
+                  ,body))))))
+
+;; (define-macro (wset v i x)
+;;   (if (number? i)
+;;       `(begin
+;;          (vector-set! ,v ,(fx+ (fx* 2 i) 0) (LO ,x))
+;;          (vector-set! ,v ,(fx+ (fx* 2 i) 1) (HI ,x)))
+;;       `(begin
+;;          (vector-set! ,v (fx+ (fx* 2 ,i) 0) (LO ,x))
+;;          (vector-set! ,v (fx+ (fx* 2 ,i) 1) (HI ,x)))))
+(define-syntax wset
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((v (list-ref form 1))
+           (i (list-ref form 2))
+           (x (list-ref form 3)))
+       (if (number? i)
+           `(begin
+              (vector-set! ,v ,(fx+ (fx* 2 i) 0) (LO ,x))
+              (vector-set! ,v ,(fx+ (fx* 2 i) 1) (HI ,x)))
+           `(begin
+              (vector-set! ,v (fx+ (fx* 2 ,i) 0) (LO ,x))
+              (vector-set! ,v (fx+ (fx* 2 ,i) 1) (HI ,x))))))))
 
 ;;;----------------------------------------------------------------------------
 
@@ -832,41 +1031,102 @@
           #xdcfe #x98ba
           #x5476 #x1032))
 
-(define-macro (wstp dst w f i n-hi16 n-lo16 r body)
-  `(wlet T1
-         ,(cons (car f) (map (lambda (v) `(LO ,v)) (cdr f)))
-         ,(cons (car f) (map (lambda (v) `(HI ,v)) (cdr f)))
-   (wadd T2 ,dst T1
-   (wref T3 block ,i
-   (wadd T4 T2 T3
-   (wlet T5
-         ,n-lo16
-         ,n-hi16
-   (wadd T6 T4 T5
-   (wrot T7 T6 ,r
-   (wadd ,dst ,w T7
-         ,body)))))))))
+;; (define-macro (wstp dst w f i n-hi16 n-lo16 r body)
+;;   `(wlet T1
+;;          ,(cons (car f) (map (lambda (v) `(LO ,v)) (cdr f)))
+;;          ,(cons (car f) (map (lambda (v) `(HI ,v)) (cdr f)))
+;;    (wadd T2 ,dst T1
+;;    (wref T3 block ,i
+;;    (wadd T4 T2 T3
+;;    (wlet T5
+;;          ,n-lo16
+;;          ,n-hi16
+;;    (wadd T6 T4 T5
+;;    (wrot T7 T6 ,r
+;;    (wadd ,dst ,w T7
+;;          ,body)))))))))
+(define-syntax wstp
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (w (list-ref form 2))
+           (f (list-ref form 3))
+           (i (list-ref form 4))
+           (n-hi16 (list-ref form 5))
+           (n-lo16 (list-ref form 6))
+           (r (list-ref form 7))
+           (body (list-ref form 8)))
+       `(wlet T1
+              ,(cons (car f) (map (lambda (v) `(LO ,v)) (cdr f)))
+              ,(cons (car f) (map (lambda (v) `(HI ,v)) (cdr f)))
+              (wadd T2 ,dst T1
+                    (wref T3 block ,i
+                          (wadd T4 T2 T3
+                                (wlet T5
+                                      ,n-lo16
+                                      ,n-hi16
+                                      (wadd T6 T4 T5
+                                            (wrot T7 T6 ,r
+                                                  (wadd ,dst ,w T7
+                                                        ,body))))))))))))
 
-(define-macro (fn-F x y z)
-  `(fxior
-    (fxand ,x ,y)
-    (fxand (fxnot ,x) ,z)))
+;; (define-macro (fn-F x y z)
+;;   `(fxior
+;;     (fxand ,x ,y)
+;;     (fxand (fxnot ,x) ,z)))
+(define-syntax fn-F
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((x (list-ref form 1))
+           (y (list-ref form 2))
+           (z (list-ref form 3)))
+       `(fxior
+         (fxand ,x ,y)
+         (fxand (fxnot ,x) ,z))))))
 
-(define-macro (fn-G x y z)
-  `(fxior
-    (fxand ,x ,z)
-    (fxand ,y (fxnot ,z))))
+;; (define-macro (fn-G x y z)
+;;   `(fxior
+;;     (fxand ,x ,z)
+;;     (fxand ,y (fxnot ,z))))
+(define-syntax fn-G
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((x (list-ref form 1))
+           (y (list-ref form 2))
+           (z (list-ref form 3)))
+       `(fxior
+         (fxand ,x ,z)
+         (fxand ,y (fxnot ,z)))))))
 
-(define-macro (fn-H x y z)
-  `(fxxor ,x (fxxor ,y ,z)))
+;; (define-macro (fn-H x y z)
+;;   `(fxxor ,x (fxxor ,y ,z)))
+(define-syntax fn-H
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((x (list-ref form 1))
+           (y (list-ref form 2))
+           (z (list-ref form 3)))
+       `(fxxor ,x (fxxor ,y ,z))))))
 
-(define-macro (fn-I x y z)
-  `(cast-u16
-    (fxxor
-     ,y
-     (fxior
-      ,x
-      (fxnot ,z)))))
+;; (define-macro (fn-I x y z)
+;;   `(cast-u16
+;;     (fxxor
+;;      ,y
+;;      (fxior
+;;       ,x
+;;       (fxnot ,z)))))
+(define-syntax fn-I
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((x (list-ref form 1))
+           (y (list-ref form 2))
+           (z (list-ref form 3)))
+       `(cast-u16
+         (fxxor
+          ,y
+          (fxior
+           ,x
+           (fxnot ,z))))))))
 
 (define (digest-update-md5 digest)
   (let* ((bd (digest-state digest))
@@ -1103,58 +1363,176 @@
           #xd9ab #x1f83
           #xcd19 #x5be0))
 
-(define-macro (fn-W dst i body)
-  `(wref ,dst block ,i ,body))
+;; (define-macro (fn-W dst i body)
+;;   `(wref ,dst block ,i ,body))
+(define-syntax fn-W
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (i (list-ref form 2))
+           (body (list-ref form 3)))
+       `(wref ,dst block ,i ,body)))))
 
-(define-macro (fn-R dst i body)
-  `(wref T1 block ,(fx- i 15) ;; compute S0
-   (wrot T2 T1 25
-   (wrot T3 T1 14
-   (wxor T4 T2 T3
-   (wshr T5 T1 3
-   (wxor S0 T4 T5
-   (wref T6 block ,(fx- i 2) ;; compute S1
-   (wrot T7 T6 15
-   (wrot T8 T6 13
-   (wxor T9 T7 T8
-   (wshr T10 T6 10
-   (wxor S1 T9 T10
-   (wadd T11 S0 S1 ;; compute sum
-   (wref T12 block ,(fx- i 7)
-   (wadd T13 T11 T12
-   (wref T14 block ,(fx- i 16)
-   (wadd ,dst T13 T14
-   (begin (wset block ,i ,dst)
-   ,body)))))))))))))))))))
+;; (define-macro (fn-R dst i body)
+;;   `(wref T1 block ,(fx- i 15) ;; compute S0
+;;    (wrot T2 T1 25
+;;    (wrot T3 T1 14
+;;    (wxor T4 T2 T3
+;;    (wshr T5 T1 3
+;;    (wxor S0 T4 T5
+;;    (wref T6 block ,(fx- i 2) ;; compute S1
+;;    (wrot T7 T6 15
+;;    (wrot T8 T6 13
+;;    (wxor T9 T7 T8
+;;    (wshr T10 T6 10
+;;    (wxor S1 T9 T10
+;;    (wadd T11 S0 S1 ;; compute sum
+;;    (wref T12 block ,(fx- i 7)
+;;    (wadd T13 T11 T12
+;;    (wref T14 block ,(fx- i 16)
+;;    (wadd ,dst T13 T14
+;;    (begin (wset block ,i ,dst)
+;;    ,body)))))))))))))))))))
+(define-syntax fn-R
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((dst (list-ref form 1))
+           (i (list-ref form 2))
+           (body (list-ref form 3)))
+       `(wref
+         T1 block ,(fx- i 15) ;; compute S0
+         (wrot
+          T2 T1 25
+          (wrot
+           T3 T1 14
+           (wxor
+            T4 T2 T3
+            (wshr
+             T5 T1 3
+             (wxor
+              S0 T4 T5
+              (wref
+               T6 block ,(fx- i 2) ;; compute S1
+               (wrot
+                T7 T6 15
+                (wrot
+                 T8 T6 13
+                 (wxor
+                  T9 T7 T8
+                  (wshr
+                   T10 T6 10
+                   (wxor
+                    S1 T9 T10
+                    (wadd
+                     T11 S0 S1 ;; compute sum
+                     (wref
+                      T12 block ,(fx- i 7)
+                      (wadd
+                       T13 T11 T12
+                       (wref
+                        T14 block ,(fx- i 16)
+                        (wadd
+                         ,dst T13 T14
+                         (begin (wset block ,i ,dst)
+                                ,body))))))))))))))))))))))
 
-(define-macro (fn-P a b c d e f g h x i k-hi16 k-lo16 body)
-  `(wrot T1 ,a 30 ;; compute S2
-   (wrot T2 ,a 19
-   (wxor T3 T1 T2
-   (wrot T4 ,a 10
-   (wxor S2 T3 T4
-   (wrot T5 ,e 26 ;; compute S3
-   (wrot T6 ,e 21
-   (wxor T7 T5 T6
-   (wrot T8 ,e 7
-   (wxor S3 T7 T8
-   (wior T9 ,a ,b ;; compute F0
-   (wand T10 ,c T9
-   (wand T11 ,a ,b
-   (wior F0 T10 T11
-   (wxor T12 ,f ,g ;; compute F1
-   (wand T13 ,e T12
-   (wxor F1 ,g T13
-   (,x T14 ,i ;; compute (fn-W i) or (fn-R i)
-   (wadd T15 T14 S3 ;; compute sum
-   (wadd T16 F1 T15
-   (wlet T17 ,k-lo16 ,k-hi16
-   (wadd T18 T16 T17
-   (wadd T19 ,h T18
-   (wadd T20 S2 F0
-   (wadd ,d T19 ,d
-   (wadd ,h T19 T20
-   ,body)))))))))))))))))))))))))))
+;; (define-macro (fn-P a b c d e f g h x i k-hi16 k-lo16 body)
+;;   `(wrot T1 ,a 30 ;; compute S2
+;;    (wrot T2 ,a 19
+;;    (wxor T3 T1 T2
+;;    (wrot T4 ,a 10
+;;    (wxor S2 T3 T4
+;;    (wrot T5 ,e 26 ;; compute S3
+;;    (wrot T6 ,e 21
+;;    (wxor T7 T5 T6
+;;    (wrot T8 ,e 7
+;;    (wxor S3 T7 T8
+;;    (wior T9 ,a ,b ;; compute F0
+;;    (wand T10 ,c T9
+;;    (wand T11 ,a ,b
+;;    (wior F0 T10 T11
+;;    (wxor T12 ,f ,g ;; compute F1
+;;    (wand T13 ,e T12
+;;    (wxor F1 ,g T13
+;;    (,x T14 ,i ;; compute (fn-W i) or (fn-R i)
+;;    (wadd T15 T14 S3 ;; compute sum
+;;    (wadd T16 F1 T15
+;;    (wlet T17 ,k-lo16 ,k-hi16
+;;    (wadd T18 T16 T17
+;;    (wadd T19 ,h T18
+;;    (wadd T20 S2 F0
+;;    (wadd ,d T19 ,d
+;;    (wadd ,h T19 T20
+;;    ,body)))))))))))))))))))))))))))
+(define-syntax fn-P
+  (rsc-macro-transformer
+   (lambda (form env)
+     (let ((a (list-ref form 1))
+           (b (list-ref form 2))
+           (c (list-ref form 3))
+           (d (list-ref form 4))
+           (e (list-ref form 5))
+           (f (list-ref form 6))
+           (g (list-ref form 7))
+           (h (list-ref form 8))
+           (x (list-ref form 9))
+           (i (list-ref form 10))
+           (k-hi16 (list-ref form 11))
+           (k-lo16 (list-ref form 12))
+           (body (list-ref form 13)))
+       `(wrot
+         T1 ,a 30 ;; compute S2
+         (wrot
+          T2 ,a 19
+          (wxor
+           T3 T1 T2
+           (wrot
+            T4 ,a 10
+            (wxor
+             S2 T3 T4
+             (wrot
+              T5 ,e 26 ;; compute S3
+              (wrot
+               T6 ,e 21
+               (wxor
+                T7 T5 T6
+                (wrot
+                 T8 ,e 7
+                 (wxor
+                  S3 T7 T8
+                  (wior
+                   T9 ,a ,b ;; compute F0
+                   (wand
+                    T10 ,c T9
+                    (wand
+                     T11 ,a ,b
+                     (wior
+                      F0 T10 T11
+                      (wxor
+                       T12 ,f ,g ;; compute F1
+                       (wand
+                        T13 ,e T12
+                        (wxor
+                         F1 ,g T13
+                         (,x
+                          T14 ,i ;; compute (fn-W i) or (fn-R i)
+                          (wadd
+                           T15 T14 S3 ;; compute sum
+                           (wadd
+                            T16 F1 T15
+                            (wlet
+                             T17 ,k-lo16 ,k-hi16
+                             (wadd
+                              T18 T16 T17
+                              (wadd
+                               T19 ,h T18
+                               (wadd
+                                T20 S2 F0
+                                (wadd
+                                 ,d T19 ,d
+                                 (wadd
+                                  ,h T19 T20
+                                  ,body))))))))))))))))))))))))))))))
 
 (define (digest-update-sha-256 digest)
   (let* ((bd (digest-state digest))
