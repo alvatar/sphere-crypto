@@ -303,8 +303,6 @@
 ;;------------------------------------------------------------------------------
 ;;!! Low-level API
 
-
-
 (define (open-digest algorithm)
   (case algorithm 
     ((crc32 CRC32)

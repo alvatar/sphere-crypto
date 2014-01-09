@@ -77,3 +77,8 @@
               make-digest
               ))
 
+(##namespace (""
+              string->utf8-u8vector
+              substring->utf8-u8vector
+              ))
+
