@@ -1,9 +1,11 @@
 (define modules
   '(;digest
-    hmac))
+    ;hmac
+    aes
+    ))
 
 (define-task compile ()
-  (info "Please note that some of the modules in this Sphere can take long to compile.")
+  (info "Please note that some of the modules in this Sphere may take long to compile.")
   (for-each (lambda (m)
               ;;(sake#compile-module m cond-expand-features: '(debug) version: '(debug))
               (sake#compile-module m cond-expand-features: '(optimize)))
