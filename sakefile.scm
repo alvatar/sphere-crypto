@@ -1,5 +1,6 @@
 (define modules
-  '(digest))
+  '(;digest
+    hmac))
 
 (define-task compile ()
   (info "Please note that some of the modules in this Sphere can take long to compile.")
