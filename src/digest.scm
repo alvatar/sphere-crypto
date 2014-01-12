@@ -97,6 +97,11 @@
  (else (void)))
 
 
+(##namespace (""
+              string->utf8-u8vector
+              substring->utf8-u8vector
+              ))
+
 ;; Selective removal of typechecks.
 
 ;; (define-macro (fx+ #!rest args) `(##fx+ ,@args))

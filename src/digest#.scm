@@ -1,5 +1,5 @@
-;;; Copyright (c) 2012-2013, Alvaro Castro-Castilla. All rights reserved.
-;;; Functional programming procedures
+;;; Copyright (c) 2014, Alvaro Castro-Castilla. All rights reserved.
+;;; Public interface for digest module
 
 (##namespace ("crypto:digest#"
               digest-u8vector
@@ -76,9 +76,3 @@
               digest?
               make-digest
               ))
-
-(##namespace (""
-              string->utf8-u8vector
-              substring->utf8-u8vector
-              ))
-

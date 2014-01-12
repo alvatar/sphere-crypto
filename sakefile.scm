@@ -1,7 +1,8 @@
 (define modules
   '(;digest
     ;hmac
-    aes
+    ;aes
+    rsa
     ))
 
 (define-task compile ()

@@ -17,6 +17,7 @@
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments) (not inline)))
  (else (void)))
 
+
 (define (make-vect32 n)
   (make-u16vector (* 2 n)))
 
