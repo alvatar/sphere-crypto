@@ -16,8 +16,6 @@
 (##namespace (""
               ISO-8859-1-string->u8vector
               apply-u8vector-append
-              ;base64-string->bignum
-              ;bignum->base64-string
               bignum->u8vector
               expt-mod
               modulo-inverse
