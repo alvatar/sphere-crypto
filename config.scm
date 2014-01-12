@@ -10,8 +10,8 @@
         (= digest)))
  (rsa
   (load (math: arithmetics)
-        (codec: base64)
         (fabric: algorithm/u8vector)
-        (fabric: algorithm/conversion)
+        (codec: util)
+        (codec: base64)
         (strings: u8)
         (= digest))))
