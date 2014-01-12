@@ -1,7 +1,7 @@
 (define modules
-  '(;digest
-    ;hmac
-    ;aes
+  '(digest
+    hmac
+    aes
     rsa
     ))
 

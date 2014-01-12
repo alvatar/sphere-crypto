@@ -176,20 +176,6 @@
       (ISO-8859-1-string->u8vector password)
       password))
 
-(define (u8vector-xor u8vect1 u8vect2)
-  (let* ((len (u8vector-length u8vect1))
-         (result (make-u8vector len)))
-    (let loop ((i (- len 1)))
-      (if (>= i 0)
-          (begin
-            (u8vector-set!
-             result
-             i
-             (fxxor (u8vector-ref u8vect1 i)
-                    (u8vector-ref u8vect2 i)))
-            (loop (- i 1)))
-          result))))
-
 (define* (make-salt (len 8)) ;; default is 64 bit salt
   (random-u8vector len))
 
