@@ -12,3 +12,7 @@ Otherwise, please read the [quickstart guide](http://www.schemespheres.org/guide
 * Message digests: CRC32, MD5, SHA-1, SHA-224, SHA-256
 * Hash-based Message Authentication Code
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/alvatar/sphere-crypto/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
