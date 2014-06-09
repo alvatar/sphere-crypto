@@ -42,7 +42,6 @@
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments) (not inline)))
  (else (void)))
 
-
 ;; To be moved to the digest module??
 (define (digest-algorithm-block-size algorithm)
   (case algorithm
@@ -61,25 +60,14 @@
   (syntax-rules () ((_) 'hex)))
 
 ;; Uses the variables |block-size| |key-u8vect| |algorithm|
-;; (define-macro (hmac-key&inner&outer-key-padding . code)
-;;   `(let* ((key-u8vect (if (> (u8vector-length key-u8vect) block-size)
-;;                           (digest-u8vector key-u8vect algorithm 'u8vector)
-;;                           key-u8vect))
-;;           (key-u8vect (u8vector-pad-to-length key-u8vect block-size))
-;;           (inner-key-padding (u8vector-xor key-u8vect #x36))
-;;           (outer-key-padding (u8vector-xor key-u8vect #x5C)))
-;;      ,@code))
-(define-syntax hmac-key&inner&outer-key-padding
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((code (cdr form)))
-       `(let* ((key-u8vect (if (> (u8vector-length key-u8vect) block-size)
-                               (digest-u8vector key-u8vect algorithm 'u8vector)
-                               key-u8vect))
-               (key-u8vect (u8vector-pad-to-length key-u8vect block-size))
-               (inner-key-padding (u8vector-xor key-u8vect #x36))
-               (outer-key-padding (u8vector-xor key-u8vect #x5C)))
-          ,@code)))))
+(define-macro (hmac-key&inner&outer-key-padding . code)
+  `(let* ((key-u8vect (if (> (u8vector-length key-u8vect) block-size)
+                          (digest-u8vector key-u8vect algorithm 'u8vector)
+                          key-u8vect))
+          (key-u8vect (u8vector-pad-to-length key-u8vect block-size))
+          (inner-key-padding (u8vector-xor/byte key-u8vect #x36))
+          (outer-key-padding (u8vector-xor/byte key-u8vect #x5C)))
+     ,@code))
 
 (define (hmac-debug:actual-key&inner&outer-key-padding block-size key-u8vect algorithm)
   (hmac-key&inner&outer-key-padding
@@ -186,13 +174,13 @@
 ;;! Conveniency wrappers
 (define (make-conveniency-hmac-wrapper algorithm)
   (lambda* (value key (start #f) (end #f))
-      (if (string? value)
-          (if start
-              (hmac-substring   value start end key algorithm)
-              (hmac-string      value           key algorithm))
-          (if start
-              (hmac-subu8vector value start end key algorithm)
-              (hmac-u8vector    value           key algorithm)))))
+           (if (string? value)
+               (if start
+                   (hmac-substring   value start end key algorithm)
+                   (hmac-string      value           key algorithm))
+               (if start
+                   (hmac-subu8vector value start end key algorithm)
+                   (hmac-u8vector    value           key algorithm)))))
 
 (define hmac-crc32
   (make-conveniency-hmac-wrapper 'crc32))

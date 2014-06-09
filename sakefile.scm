@@ -2,19 +2,17 @@
   '(digest
     hmac
     aes
-    rsa
-    ))
+    rsa))
 
 (define-task compile ()
-  (info "Please note that some of the modules in this Sphere may take long to compile.")
+  (info/color 'green "Please note that some of the modules in this Sphere may take long to compile.")
   (sake#parallel-for-each
    (lambda (m)
-     ;;(sake#compile-module m cond-expand-features: '(debug) version: '(debug))
+     (sake#compile-module m cond-expand-features: '(debug) version: '(debug))
      (sake#compile-module m cond-expand-features: '(optimize)))
    modules))
 
 (define-task post-compile ()
-  ;;(for-each (lambda (m) (sake#make-module-available m versions: '(() (debug)))) modules)
   (for-each (lambda (m) (sake#make-module-available m)) modules))
 
 (define-task install ()

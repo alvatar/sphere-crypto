@@ -1,5 +1,5 @@
-(##import energy: testing)
-(##import crypto: hmac)
+(##spheres-load energy: testing)
+(##spheres-load crypto: digest version: (debug))
 
 (test-begin "Cryptographic Hash Functions")
 

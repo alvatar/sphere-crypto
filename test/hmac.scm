@@ -1,5 +1,5 @@
-(##import energy: testing)
-(##import crypto: hmac)
+(##spheres-load energy: testing)
+(##spheres-load crypto: hmac version: (debug))
 
 (test-begin "Hash-based Message Authentication Code")
 
