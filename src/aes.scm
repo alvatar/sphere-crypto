@@ -27,124 +27,125 @@
 (define (u16 lo hi)
   (+ (fxarithmetic-shift-left hi 8) lo))
 
-;; (define-macro (ref32-L u16vect i)
-;;   `(u16vector-ref ,u16vect (* ,i 2)))
-(define-syntax ref32-L
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((u16vect (list-ref form 1))
-           (i (list-ref form 2)))
-       `(u16vector-ref ,u16vect (* ,i 2))))))
+;; (define-syntax ref32-L
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((u16vect (list-ref form 1))
+;;            (i (list-ref form 2)))
+;;        `(u16vector-ref ,u16vect (* ,i 2))))))
+(define-macro (ref32-L u16vect i)
+  `(u16vector-ref ,u16vect (* ,i 2)))
 
-;; (define-macro (ref32-H u16vect i)
-;;   `(u16vector-ref ,u16vect (+ 1 (* ,i 2))))
-(define-syntax ref32-H
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((u16vect (list-ref form 1)) (i (list-ref form 2)))
-       `(u16vector-ref ,u16vect (+ 1 (* ,i 2)))))))
+;; (define-syntax ref32-H
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((u16vect (list-ref form 1)) (i (list-ref form 2)))
+;;        `(u16vector-ref ,u16vect (+ 1 (* ,i 2)))))))
+(define-macro (ref32-H u16vect i)
+  `(u16vector-ref ,u16vect (+ 1 (* ,i 2))))
 
-;; (define-macro (ref32 var-lo var-hi u16vect i body)
-;;   `(let* ((,var-hi (* ,i 2))
-;;           (,var-lo (u16vector-ref ,u16vect ,var-hi))
-;;           (,var-hi (u16vector-ref ,u16vect (+ 1 ,var-hi))))
-;;      ,body))
-(define-syntax ref32
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (u16vect (list-ref form 3))
-           (i (list-ref form 4))
-           (body (list-ref form 5)))
-       `(let* ((,var-hi (* ,i 2))
-               (,var-lo (u16vector-ref ,u16vect ,var-hi))
-               (,var-hi (u16vector-ref ,u16vect (+ 1 ,var-hi))))
-          ,body)))))
+;; (define-syntax ref32
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (u16vect (list-ref form 3))
+;;            (i (list-ref form 4))
+;;            (body (list-ref form 5)))
+;;        `(let* ((,var-hi (* ,i 2))
+;;                (,var-lo (u16vector-ref ,u16vect ,var-hi))
+;;                (,var-hi (u16vector-ref ,u16vect (+ 1 ,var-hi))))
+;;           ,body)))))
+(define-macro (ref32 var-lo var-hi u16vect i body)
+  `(let* ((,var-hi (* ,i 2))
+          (,var-lo (u16vector-ref ,u16vect ,var-hi))
+          (,var-hi (u16vector-ref ,u16vect (+ 1 ,var-hi))))
+     ,body))
 
-;; (define-macro (set32 lo hi u16vect i)
-;;   `(let ((i (* ,i 2)))
-;;      (u16vector-set! ,u16vect i ,lo)
-;;      (u16vector-set! ,u16vect (+ 1 i) ,hi)))
-(define-syntax set32
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((lo (list-ref form 1)) (hi (list-ref form 2)) (u16vect (list-ref form 3)) (i (list-ref form 4)))
-       `(let ((i (* ,i 2)))
-          (u16vector-set! ,u16vect i ,lo)
-          (u16vector-set! ,u16vect (+ 1 i) ,hi))))))
+;; (define-syntax set32
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((lo (list-ref form 1)) (hi (list-ref form 2)) (u16vect (list-ref form 3)) (i (list-ref form 4)))
+;;        `(let ((i (* ,i 2)))
+;;           (u16vector-set! ,u16vect i ,lo)
+;;           (u16vector-set! ,u16vect (+ 1 i) ,hi))))))
+(define-macro (set32 lo hi u16vect i)
+  `(let ((i (* ,i 2)))
+     (u16vector-set! ,u16vect i ,lo)
+     (u16vector-set! ,u16vect (+ 1 i) ,hi)))
 
-;; (define-macro (xor32 dst-lo dst-hi x1-lo x1-hi x2-lo x2-hi body)
-;;   `(let ((,dst-lo (fxxor ,x1-lo ,x2-lo))
-;;          (,dst-hi (fxxor ,x1-hi ,x2-hi)))
-;;      ,body))
-(define-syntax
-  xor32
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((dst-lo (list-ref form 1))
-           (dst-hi (list-ref form 2))
-           (x1-lo (list-ref form 3))
-           (x1-hi (list-ref form 4))
-           (x2-lo (list-ref form 5))
-           (x2-hi (list-ref form 6))
-           (body (list-ref form 7)))
-       `(let ((,dst-lo (fxxor ,x1-lo ,x2-lo))
-              (,dst-hi (fxxor ,x1-hi ,x2-hi)))
-          ,body)))))
+;; (define-syntax
+;;   xor32
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((dst-lo (list-ref form 1))
+;;            (dst-hi (list-ref form 2))
+;;            (x1-lo (list-ref form 3))
+;;            (x1-hi (list-ref form 4))
+;;            (x2-lo (list-ref form 5))
+;;            (x2-hi (list-ref form 6))
+;;            (body (list-ref form 7)))
+;;        `(let ((,dst-lo (fxxor ,x1-lo ,x2-lo))
+;;               (,dst-hi (fxxor ,x1-hi ,x2-hi)))
+;;           ,body)))))
+(define-macro (xor32 dst-lo dst-hi x1-lo x1-hi x2-lo x2-hi body)
+  `(let ((,dst-lo (fxxor ,x1-lo ,x2-lo))
+         (,dst-hi (fxxor ,x1-hi ,x2-hi)))
+     ,body))
 
-;; (define-macro (get32 lo hi u8vect i body)
-;;   `(let* ((index ,i)
-;;           (,lo (u16 (u8vector-ref ,u8vect (+ index 3))
-;;                     (u8vector-ref ,u8vect (+ index 2))))
-;;           (,hi (u16 (u8vector-ref ,u8vect (+ index 1))
-;;                     (u8vector-ref ,u8vect index))))
-;;      ,body))
-(define-syntax get32
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((lo (list-ref form 1))
-           (hi (list-ref form 2))
-           (u8vect (list-ref form 3))
-           (i (list-ref form 4))
-           (body (list-ref form 5)))
-       `(let* ((index ,i)
-               (,lo (u16 (u8vector-ref ,u8vect (+ index 3))
-                         (u8vector-ref ,u8vect (+ index 2))))
-               (,hi (u16 (u8vector-ref ,u8vect (+ index 1))
-                         (u8vector-ref ,u8vect index))))
-          ,body)))))
+;; (define-syntax get32
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((lo (list-ref form 1))
+;;            (hi (list-ref form 2))
+;;            (u8vect (list-ref form 3))
+;;            (i (list-ref form 4))
+;;            (body (list-ref form 5)))
+;;        `(let* ((index ,i)
+;;                (,lo (u16 (u8vector-ref ,u8vect (+ index 3))
+;;                          (u8vector-ref ,u8vect (+ index 2))))
+;;                (,hi (u16 (u8vector-ref ,u8vect (+ index 1))
+;;                          (u8vector-ref ,u8vect index))))
+;;           ,body)))))
+(define-macro (get32 lo hi u8vect i body)
+  `(let* ((index ,i)
+          (,lo (u16 (u8vector-ref ,u8vect (+ index 3))
+                    (u8vector-ref ,u8vect (+ index 2))))
+          (,hi (u16 (u8vector-ref ,u8vect (+ index 1))
+                    (u8vector-ref ,u8vect index))))
+     ,body))
 
-;; (define-macro (put32 lo hi u8vect i)
-;;   `(let ((index ,i))
-;;      (u8vector-set!
-;;       ,u8vect
-;;       index
-;;       (fxarithmetic-shift-right ,hi 8))
-;;      (u8vector-set!
-;;       ,u8vect
-;;       (+ index 1)
-;;       (fxand #xff ,hi))
-;;      (u8vector-set!
-;;       ,u8vect
-;;       (+ index 2)
-;;       (fxarithmetic-shift-right ,lo 8))
-;;      (u8vector-set!
-;;       ,u8vect
-;;       (+ index 3)
-;;       (fxand #xff ,lo))))
-(define-syntax put32
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((lo (list-ref form 1))
-           (hi (list-ref form 2))
-           (u8vect (list-ref form 3))
-           (i (list-ref form 4)))
-       `(let ((index ,i))
-          (u8vector-set! ,u8vect index (fxarithmetic-shift-right ,hi 8))
-          (u8vector-set! ,u8vect (+ index 1) (fxand 255 ,hi))
-          (u8vector-set! ,u8vect (+ index 2) (fxarithmetic-shift-right ,lo 8))
-          (u8vector-set! ,u8vect (+ index 3) (fxand 255 ,lo)))))))
+;; (define-syntax put32
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((lo (list-ref form 1))
+;;            (hi (list-ref form 2))
+;;            (u8vect (list-ref form 3))
+;;            (i (list-ref form 4)))
+;;        `(let ((index ,i))
+;;           (u8vector-set! ,u8vect index (fxarithmetic-shift-right ,hi 8))
+;;           (u8vector-set! ,u8vect (+ index 1) (fxand 255 ,hi))
+;;           (u8vector-set! ,u8vect (+ index 2) (fxarithmetic-shift-right ,lo 8))
+;;           (u8vector-set! ,u8vect (+ index 3) (fxand 255 ,lo)))))))
+(define-macro (put32 lo hi u8vect i)
+  `(let ((index ,i))
+     (u8vector-set!
+      ,u8vect
+      index
+      (fxarithmetic-shift-right ,hi 8))
+     (u8vector-set!
+      ,u8vect
+      (+ index 1)
+      (fxand #xff ,hi))
+     (u8vector-set!
+      ,u8vect
+      (+ index 2)
+      (fxarithmetic-shift-right ,lo 8))
+     (u8vector-set!
+      ,u8vect
+      (+ index 3)
+      (fxand #xff ,lo))))
+
 
 ;;----------------------------------------------------------------------------
 ;; Useful tables
@@ -202,13 +203,13 @@
      #x8C #xA1 #x89 #x0D #xBF #xE6 #x42 #x68
      #x41 #x99 #x2D #x0F #xB0 #x54 #xBB #x16)))
 
-;; (define-macro (FSb-ref i)
-;;   `(u8vector-ref FSb ,i))
-(define-syntax FSb-ref
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((i (list-ref form 1)))
-       `(u8vector-ref FSb ,i)))))
+;; (define-syntax FSb-ref
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((i (list-ref form 1)))
+;;        `(u8vector-ref FSb ,i)))))
+(define-macro (FSb-ref i)
+  `(u8vector-ref FSb ,i))
 
 (define FT
   '#(#xC663 #x63A5 #xF87C #x7C84 #xEE77 #x7799 #xF67B #x7B8D
@@ -323,13 +324,13 @@
      #x17 #x2B #x04 #x7E #xBA #x77 #xD6 #x26
      #xE1 #x69 #x14 #x63 #x55 #x21 #x0C #x7D)))
 
-;; (define-macro (RSb-ref i)
-;;   `(u8vector-ref RSb ,i))
-(define-syntax RSb-ref
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((i (list-ref form 1)))
-       `(u8vector-ref RSb ,i)))))
+;; (define-syntax RSb-ref
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((i (list-ref form 1)))
+;;        `(u8vector-ref RSb ,i)))))
+(define-macro (RSb-ref i)
+  `(u8vector-ref RSb ,i))
 
 (define RT
   '#(#x51F4 #xA750 #x7E41 #x6553 #x1A17 #xA4C3 #x3A27 #x5E96
@@ -435,64 +436,64 @@
   KT2
   KT3)
 
-;; (define-macro (xorAA var-lo var-hi X-L X-H i Y-L Y-H body)
-;;   `(let* ((,var-lo
-;;            (fxxor
-;;             ,X-L
-;;             (fxxor
-;;              (ref32-L RCON ,i)
-;;              (u16 (FSb-ref (fxarithmetic-shift-right ,Y-H 8))
-;;                   (FSb-ref (fxand #xff ,Y-L))))))
-;;           (,var-hi
-;;            (fxxor
-;;             ,X-H
-;;             (fxxor
-;;              (ref32-H RCON ,i)
-;;              (u16 (FSb-ref (fxarithmetic-shift-right ,Y-L 8))
-;;                   (FSb-ref (fxand #xff ,Y-H)))))))
-;;      ,body))
-(define-syntax xorAA
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (X-L (list-ref form 3))
-           (X-H (list-ref form 4))
-           (i (list-ref form 5))
-           (Y-L (list-ref form 6))
-           (Y-H (list-ref form 7))
-           (body (list-ref form 8)))
-       `(let* ((,var-lo
-                (fxxor ,X-L (fxxor (ref32-L RCON ,i) (u16 (FSb-ref (fxarithmetic-shift-right ,Y-H 8)) (FSb-ref (fxand 255 ,Y-L))))))
-               (,var-hi
-                (fxxor ,X-H (fxxor (ref32-H RCON ,i) (u16 (FSb-ref (fxarithmetic-shift-right ,Y-L 8)) (FSb-ref (fxand 255 ,Y-H)))))))
-          ,body)))))
+;; (define-syntax xorAA
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (X-L (list-ref form 3))
+;;            (X-H (list-ref form 4))
+;;            (i (list-ref form 5))
+;;            (Y-L (list-ref form 6))
+;;            (Y-H (list-ref form 7))
+;;            (body (list-ref form 8)))
+;;        `(let* ((,var-lo
+;;                 (fxxor ,X-L (fxxor (ref32-L RCON ,i) (u16 (FSb-ref (fxarithmetic-shift-right ,Y-H 8)) (FSb-ref (fxand 255 ,Y-L))))))
+;;                (,var-hi
+;;                 (fxxor ,X-H (fxxor (ref32-H RCON ,i) (u16 (FSb-ref (fxarithmetic-shift-right ,Y-L 8)) (FSb-ref (fxand 255 ,Y-H)))))))
+;;           ,body)))))
+(define-macro (xorAA var-lo var-hi X-L X-H i Y-L Y-H body)
+  `(let* ((,var-lo
+           (fxxor
+            ,X-L
+            (fxxor
+             (ref32-L RCON ,i)
+             (u16 (FSb-ref (fxarithmetic-shift-right ,Y-H 8))
+                  (FSb-ref (fxand #xff ,Y-L))))))
+          (,var-hi
+           (fxxor
+            ,X-H
+            (fxxor
+             (ref32-H RCON ,i)
+             (u16 (FSb-ref (fxarithmetic-shift-right ,Y-L 8))
+                  (FSb-ref (fxand #xff ,Y-H)))))))
+     ,body))
 
-;; (define-macro (xorBB var-lo var-hi X-L X-H Y-L Y-H body)
-;;   `(let* ((,var-lo
-;;            (fxxor
-;;             ,X-L
-;;             (u16 (FSb-ref (fxand #xff ,Y-L))
-;;                  (FSb-ref (fxarithmetic-shift-right ,Y-L 8)))))
-;;           (,var-hi
-;;            (fxxor
-;;             ,X-H
-;;             (u16 (FSb-ref (fxand #xff ,Y-H))
-;;                  (FSb-ref (fxarithmetic-shift-right ,Y-H 8))))))
-;;      ,body))
-(define-syntax xorBB
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (X-L (list-ref form 3))
-           (X-H (list-ref form 4))
-           (Y-L (list-ref form 5))
-           (Y-H (list-ref form 6))
-           (body (list-ref form 7)))
-       `(let* ((,var-lo (fxxor ,X-L (u16 (FSb-ref (fxand 255 ,Y-L)) (FSb-ref (fxarithmetic-shift-right ,Y-L 8)))))
-               (,var-hi (fxxor ,X-H (u16 (FSb-ref (fxand 255 ,Y-H)) (FSb-ref (fxarithmetic-shift-right ,Y-H 8))))))
-          ,body)))))
+;; (define-syntax xorBB
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (X-L (list-ref form 3))
+;;            (X-H (list-ref form 4))
+;;            (Y-L (list-ref form 5))
+;;            (Y-H (list-ref form 6))
+;;            (body (list-ref form 7)))
+;;        `(let* ((,var-lo (fxxor ,X-L (u16 (FSb-ref (fxand 255 ,Y-L)) (FSb-ref (fxarithmetic-shift-right ,Y-L 8)))))
+;;                (,var-hi (fxxor ,X-H (u16 (FSb-ref (fxand 255 ,Y-H)) (FSb-ref (fxarithmetic-shift-right ,Y-H 8))))))
+;;           ,body)))))
+(define-macro (xorBB var-lo var-hi X-L X-H Y-L Y-H body)
+  `(let* ((,var-lo
+           (fxxor
+            ,X-L
+            (u16 (FSb-ref (fxand #xff ,Y-L))
+                 (FSb-ref (fxarithmetic-shift-right ,Y-L 8)))))
+          (,var-hi
+           (fxxor
+            ,X-H
+            (u16 (FSb-ref (fxand #xff ,Y-H))
+                 (FSb-ref (fxarithmetic-shift-right ,Y-H 8))))))
+     ,body))
 
 (define (u8vector->aes-context key) ;; key: u8vector of length 16, 24 or 32
   (let ((len (u8vector-length key)))
@@ -646,130 +647,131 @@
 
 ;;! Electronic Codebook (ECB) Mode Encryption.
 
-;; (define-macro (FCOMB1 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
-;;   `(let ((,var-lo
-;;           (fxxor
-;;            (ref32-L RK ,i)
-;;            (fxxor
-;;             (ref32-L FT0 (fxarithmetic-shift-right ,Y0-H 8))
-;;             (fxxor
-;;              (ref32-L FT1 (fxand #xff ,Y1-H))
-;;              (fxxor
-;;               (ref32-L FT2 (fxarithmetic-shift-right ,Y2-L 8))
-;;               (ref32-L FT3 (fxand #xff ,Y3-L)))))))
-;;          (,var-hi
-;;           (fxxor
-;;            (ref32-H RK ,i)
-;;            (fxxor
-;;             (ref32-H FT0 (fxarithmetic-shift-right ,Y0-H 8))
-;;             (fxxor
-;;              (ref32-H FT1 (fxand #xff ,Y1-H))
-;;              (fxxor
-;;               (ref32-H FT2 (fxarithmetic-shift-right ,Y2-L 8))
-;;               (ref32-H FT3 (fxand #xff ,Y3-L)))))))
-;;          (,i
-;;           (+ ,i 1)))
-;;      ,body))
-(define-syntax FCOMB1
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (i (list-ref form 3))
-           (Y0-H (list-ref form 4))
-           (Y1-H (list-ref form 5))
-           (Y2-L (list-ref form 6))
-           (Y3-L (list-ref form 7))
-           (body (list-ref form 8)))
-       `(let ((,var-lo
-               (fxxor (ref32-L RK ,i)
-                      (fxxor (ref32-L FT0 (fxarithmetic-shift-right ,Y0-H 8))
-                             (fxxor (ref32-L FT1 (fxand 255 ,Y1-H))
-                                    (fxxor (ref32-L FT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-L FT3 (fxand 255 ,Y3-L)))))))
-              (,var-hi
-               (fxxor (ref32-H RK ,i)
-                      (fxxor (ref32-H FT0 (fxarithmetic-shift-right ,Y0-H 8))
-                             (fxxor (ref32-H FT1 (fxand 255 ,Y1-H))
-                                    (fxxor (ref32-H FT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-H FT3 (fxand 255 ,Y3-L)))))))
-              (,i (+ ,i 1)))
-          ,body)))))
+;; (define-syntax FCOMB1
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (i (list-ref form 3))
+;;            (Y0-H (list-ref form 4))
+;;            (Y1-H (list-ref form 5))
+;;            (Y2-L (list-ref form 6))
+;;            (Y3-L (list-ref form 7))
+;;            (body (list-ref form 8)))
+;;        `(let ((,var-lo
+;;                (fxxor (ref32-L RK ,i)
+;;                       (fxxor (ref32-L FT0 (fxarithmetic-shift-right ,Y0-H 8))
+;;                              (fxxor (ref32-L FT1 (fxand 255 ,Y1-H))
+;;                                     (fxxor (ref32-L FT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-L FT3 (fxand 255 ,Y3-L)))))))
+;;               (,var-hi
+;;                (fxxor (ref32-H RK ,i)
+;;                       (fxxor (ref32-H FT0 (fxarithmetic-shift-right ,Y0-H 8))
+;;                              (fxxor (ref32-H FT1 (fxand 255 ,Y1-H))
+;;                                     (fxxor (ref32-H FT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-H FT3 (fxand 255 ,Y3-L)))))))
+;;               (,i (+ ,i 1)))
+;;           ,body)))))
+(define-macro (FCOMB1 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
+  `(let ((,var-lo
+          (fxxor
+           (ref32-L RK ,i)
+           (fxxor
+            (ref32-L FT0 (fxarithmetic-shift-right ,Y0-H 8))
+            (fxxor
+             (ref32-L FT1 (fxand #xff ,Y1-H))
+             (fxxor
+              (ref32-L FT2 (fxarithmetic-shift-right ,Y2-L 8))
+              (ref32-L FT3 (fxand #xff ,Y3-L)))))))
+         (,var-hi
+          (fxxor
+           (ref32-H RK ,i)
+           (fxxor
+            (ref32-H FT0 (fxarithmetic-shift-right ,Y0-H 8))
+            (fxxor
+             (ref32-H FT1 (fxand #xff ,Y1-H))
+             (fxxor
+              (ref32-H FT2 (fxarithmetic-shift-right ,Y2-L 8))
+              (ref32-H FT3 (fxand #xff ,Y3-L)))))))
+         (,i
+          (+ ,i 1)))
+     ,body))
 
-;; (define-macro (FCOMB2 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
-;;   `(let ((,var-lo
-;;           (fxxor
-;;            (ref32-L RK ,i)
-;;            (u16 (FSb-ref (fxand #xff ,Y3-L))
-;;                 (FSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
-;;          (,var-hi
-;;           (fxxor
-;;            (ref32-H RK ,i)
-;;            (u16 (FSb-ref (fxand #xff ,Y1-H))
-;;                 (FSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
-;;          (,i
-;;           (+ ,i 1)))
-;;      ,body))
-(define-syntax FCOMB2
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (i (list-ref form 3))
-           (Y0-H (list-ref form 4))
-           (Y1-H (list-ref form 5))
-           (Y2-L (list-ref form 6))
-           (Y3-L (list-ref form 7))
-           (body (list-ref form 8)))
-       `(let ((,var-lo (fxxor (ref32-L RK ,i) (u16 (FSb-ref (fxand 255 ,Y3-L)) (FSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
-              (,var-hi (fxxor (ref32-H RK ,i) (u16 (FSb-ref (fxand 255 ,Y1-H)) (FSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
-              (,i (+ ,i 1)))
-          ,body)))))
+;; (define-syntax FCOMB2
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (i (list-ref form 3))
+;;            (Y0-H (list-ref form 4))
+;;            (Y1-H (list-ref form 5))
+;;            (Y2-L (list-ref form 6))
+;;            (Y3-L (list-ref form 7))
+;;            (body (list-ref form 8)))
+;;        `(let ((,var-lo (fxxor (ref32-L RK ,i) (u16 (FSb-ref (fxand 255 ,Y3-L)) (FSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
+;;               (,var-hi (fxxor (ref32-H RK ,i) (u16 (FSb-ref (fxand 255 ,Y1-H)) (FSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
+;;               (,i (+ ,i 1)))
+;;           ,body)))))
+(define-macro (FCOMB2 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
+  `(let ((,var-lo
+          (fxxor
+           (ref32-L RK ,i)
+           (u16 (FSb-ref (fxand #xff ,Y3-L))
+                (FSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
+         (,var-hi
+          (fxxor
+           (ref32-H RK ,i)
+           (u16 (FSb-ref (fxand #xff ,Y1-H))
+                (FSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
+         (,i
+          (+ ,i 1)))
+     ,body))
 
-;; (define-macro (FROUND i
-;;                       X0-L X0-H X1-L X1-H X2-L X2-H X3-L X3-H
-;;                       Y0-L Y0-H Y1-L Y1-H Y2-L Y2-H Y3-L Y3-H
-;;                       body)
-;;   `(FCOMB1 ,X0-L ,X0-H ,i ,Y0-H ,Y1-H ,Y2-L ,Y3-L
-;;            (FCOMB1 ,X1-L ,X1-H ,i ,Y1-H ,Y2-H ,Y3-L ,Y0-L
-;;                    (FCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y3-H ,Y0-L ,Y1-L
-;;                            (FCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y0-H ,Y1-L ,Y2-L
-;;                                    ,body)))))
-(define-syntax
-  FROUND
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((i (list-ref form 1))
-           (X0-L (list-ref form 2))
-           (X0-H (list-ref form 3))
-           (X1-L (list-ref form 4))
-           (X1-H (list-ref form 5))
-           (X2-L (list-ref form 6))
-           (X2-H (list-ref form 7))
-           (X3-L (list-ref form 8))
-           (X3-H (list-ref form 9))
-           (Y0-L (list-ref form 10))
-           (Y0-H (list-ref form 11))
-           (Y1-L (list-ref form 12))
-           (Y1-H (list-ref form 13))
-           (Y2-L (list-ref form 14))
-           (Y2-H (list-ref form 15))
-           (Y3-L (list-ref form 16))
-           (Y3-H (list-ref form 17))
-           (body (list-ref form 18)))
-       `(FCOMB1 ,X0-L
-                ,X0-H
-                ,i
-                ,Y0-H
-                ,Y1-H
-                ,Y2-L
-                ,Y3-L
-                (FCOMB1 ,X1-L
-                        ,X1-H
-                        ,i
-                        ,Y1-H
-                        ,Y2-H
-                        ,Y3-L
-                        ,Y0-L
-                        (FCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y3-H ,Y0-L ,Y1-L (FCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y0-H ,Y1-L ,Y2-L ,body))))))))
+;; (define-syntax
+;;   FROUND
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((i (list-ref form 1))
+;;            (X0-L (list-ref form 2))
+;;            (X0-H (list-ref form 3))
+;;            (X1-L (list-ref form 4))
+;;            (X1-H (list-ref form 5))
+;;            (X2-L (list-ref form 6))
+;;            (X2-H (list-ref form 7))
+;;            (X3-L (list-ref form 8))
+;;            (X3-H (list-ref form 9))
+;;            (Y0-L (list-ref form 10))
+;;            (Y0-H (list-ref form 11))
+;;            (Y1-L (list-ref form 12))
+;;            (Y1-H (list-ref form 13))
+;;            (Y2-L (list-ref form 14))
+;;            (Y2-H (list-ref form 15))
+;;            (Y3-L (list-ref form 16))
+;;            (Y3-H (list-ref form 17))
+;;            (body (list-ref form 18)))
+;;        `(FCOMB1 ,X0-L
+;;                 ,X0-H
+;;                 ,i
+;;                 ,Y0-H
+;;                 ,Y1-H
+;;                 ,Y2-L
+;;                 ,Y3-L
+;;                 (FCOMB1 ,X1-L
+;;                         ,X1-H
+;;                         ,i
+;;                         ,Y1-H
+;;                         ,Y2-H
+;;                         ,Y3-L
+;;                         ,Y0-L
+;;                         (FCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y3-H ,Y0-L ,Y1-L (FCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y0-H ,Y1-L ,Y2-L ,body))))))))
+(define-macro (FROUND i
+                      X0-L X0-H X1-L X1-H X2-L X2-H X3-L X3-H
+                      Y0-L Y0-H Y1-L Y1-H Y2-L Y2-H Y3-L Y3-H
+                      body)
+  `(FCOMB1 ,X0-L ,X0-H ,i ,Y0-H ,Y1-H ,Y2-L ,Y3-L
+   (FCOMB1 ,X1-L ,X1-H ,i ,Y1-H ,Y2-H ,Y3-L ,Y0-L
+   (FCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y3-H ,Y0-L ,Y1-L
+   (FCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y0-H ,Y1-L ,Y2-L
+   ,body)))))
+
 
 (define (aes-encrypt-ecb context input istart output ostart)
   (let ((RK (aes-context-erk context)))
@@ -834,121 +836,121 @@
 
 ;;! Electronic Codebook (ECB) Mode Decryption.
 
-;; (define-macro (RCOMB1 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
-;;   `(let ((,var-lo
-;;           (fxxor
-;;            (ref32-L RK ,i)
-;;            (fxxor
-;;             (ref32-L RT0 (fxarithmetic-shift-right ,Y0-H 8))
-;;             (fxxor
-;;              (ref32-L RT1 (fxand #xff ,Y1-H))
-;;              (fxxor
-;;               (ref32-L RT2 (fxarithmetic-shift-right ,Y2-L 8))
-;;               (ref32-L RT3 (fxand #xff ,Y3-L)))))))
-;;          (,var-hi
-;;           (fxxor
-;;            (ref32-H RK ,i)
-;;            (fxxor
-;;             (ref32-H RT0 (fxarithmetic-shift-right ,Y0-H 8))
-;;             (fxxor
-;;              (ref32-H RT1 (fxand #xff ,Y1-H))
-;;              (fxxor
-;;               (ref32-H RT2 (fxarithmetic-shift-right ,Y2-L 8))
-;;               (ref32-H RT3 (fxand #xff ,Y3-L)))))))
-;;          (,i
-;;           (+ ,i 1)))
-;;      ,body))
-(define-syntax RCOMB1
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (i (list-ref form 3))
-           (Y0-H (list-ref form 4))
-           (Y1-H (list-ref form 5))
-           (Y2-L (list-ref form 6))
-           (Y3-L (list-ref form 7))
-           (body (list-ref form 8)))
-       `(let ((,var-lo
-               (fxxor (ref32-L RK ,i)
-                      (fxxor (ref32-L RT0 (fxarithmetic-shift-right ,Y0-H 8))
-                             (fxxor (ref32-L RT1 (fxand 255 ,Y1-H))
-                                    (fxxor (ref32-L RT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-L RT3 (fxand 255 ,Y3-L)))))))
-              (,var-hi
-               (fxxor (ref32-H RK ,i)
-                      (fxxor (ref32-H RT0 (fxarithmetic-shift-right ,Y0-H 8))
-                             (fxxor (ref32-H RT1 (fxand 255 ,Y1-H))
-                                    (fxxor (ref32-H RT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-H RT3 (fxand 255 ,Y3-L)))))))
-              (,i (+ ,i 1)))
-          ,body)))))
+;; (define-syntax RCOMB1
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (i (list-ref form 3))
+;;            (Y0-H (list-ref form 4))
+;;            (Y1-H (list-ref form 5))
+;;            (Y2-L (list-ref form 6))
+;;            (Y3-L (list-ref form 7))
+;;            (body (list-ref form 8)))
+;;        `(let ((,var-lo
+;;                (fxxor (ref32-L RK ,i)
+;;                       (fxxor (ref32-L RT0 (fxarithmetic-shift-right ,Y0-H 8))
+;;                              (fxxor (ref32-L RT1 (fxand 255 ,Y1-H))
+;;                                     (fxxor (ref32-L RT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-L RT3 (fxand 255 ,Y3-L)))))))
+;;               (,var-hi
+;;                (fxxor (ref32-H RK ,i)
+;;                       (fxxor (ref32-H RT0 (fxarithmetic-shift-right ,Y0-H 8))
+;;                              (fxxor (ref32-H RT1 (fxand 255 ,Y1-H))
+;;                                     (fxxor (ref32-H RT2 (fxarithmetic-shift-right ,Y2-L 8)) (ref32-H RT3 (fxand 255 ,Y3-L)))))))
+;;               (,i (+ ,i 1)))
+;;           ,body)))))
+(define-macro (RCOMB1 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
+  `(let ((,var-lo
+          (fxxor
+           (ref32-L RK ,i)
+           (fxxor
+            (ref32-L RT0 (fxarithmetic-shift-right ,Y0-H 8))
+            (fxxor
+             (ref32-L RT1 (fxand #xff ,Y1-H))
+             (fxxor
+              (ref32-L RT2 (fxarithmetic-shift-right ,Y2-L 8))
+              (ref32-L RT3 (fxand #xff ,Y3-L)))))))
+         (,var-hi
+          (fxxor
+           (ref32-H RK ,i)
+           (fxxor
+            (ref32-H RT0 (fxarithmetic-shift-right ,Y0-H 8))
+            (fxxor
+             (ref32-H RT1 (fxand #xff ,Y1-H))
+             (fxxor
+              (ref32-H RT2 (fxarithmetic-shift-right ,Y2-L 8))
+              (ref32-H RT3 (fxand #xff ,Y3-L)))))))
+         (,i
+          (+ ,i 1)))
+     ,body))
 
-;; (define-macro (RCOMB2 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
-;;   `(let ((,var-lo
-;;           (fxxor
-;;            (ref32-L RK ,i)
-;;            (u16 (RSb-ref (fxand #xff ,Y3-L))
-;;                 (RSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
-;;          (,var-hi
-;;           (fxxor
-;;            (ref32-H RK ,i)
-;;            (u16 (RSb-ref (fxand #xff ,Y1-H))
-;;                 (RSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
-;;          (,i
-;;           (+ ,i 1)))
-;;      ,body))
-(define-syntax RCOMB2
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((var-lo (list-ref form 1))
-           (var-hi (list-ref form 2))
-           (i (list-ref form 3))
-           (Y0-H (list-ref form 4))
-           (Y1-H (list-ref form 5))
-           (Y2-L (list-ref form 6))
-           (Y3-L (list-ref form 7))
-           (body (list-ref form 8)))
-       `(let ((,var-lo (fxxor (ref32-L RK ,i) (u16 (RSb-ref (fxand 255 ,Y3-L)) (RSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
-              (,var-hi (fxxor (ref32-H RK ,i) (u16 (RSb-ref (fxand 255 ,Y1-H)) (RSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
-              (,i (+ ,i 1)))
-          ,body)))))
+;; (define-syntax RCOMB2
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((var-lo (list-ref form 1))
+;;            (var-hi (list-ref form 2))
+;;            (i (list-ref form 3))
+;;            (Y0-H (list-ref form 4))
+;;            (Y1-H (list-ref form 5))
+;;            (Y2-L (list-ref form 6))
+;;            (Y3-L (list-ref form 7))
+;;            (body (list-ref form 8)))
+;;        `(let ((,var-lo (fxxor (ref32-L RK ,i) (u16 (RSb-ref (fxand 255 ,Y3-L)) (RSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
+;;               (,var-hi (fxxor (ref32-H RK ,i) (u16 (RSb-ref (fxand 255 ,Y1-H)) (RSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
+;;               (,i (+ ,i 1)))
+;;           ,body)))))
+(define-macro (RCOMB2 var-lo var-hi i Y0-H Y1-H Y2-L Y3-L body)
+  `(let ((,var-lo
+          (fxxor
+           (ref32-L RK ,i)
+           (u16 (RSb-ref (fxand #xff ,Y3-L))
+                (RSb-ref (fxarithmetic-shift-right ,Y2-L 8)))))
+         (,var-hi
+          (fxxor
+           (ref32-H RK ,i)
+           (u16 (RSb-ref (fxand #xff ,Y1-H))
+                (RSb-ref (fxarithmetic-shift-right ,Y0-H 8)))))
+         (,i
+          (+ ,i 1)))
+     ,body))
 
-;; (define-macro (RROUND i
-;;                       X0-L X0-H X1-L X1-H X2-L X2-H X3-L X3-H
-;;                       Y0-L Y0-H Y1-L Y1-H Y2-L Y2-H Y3-L Y3-H
-;;                       body)
-;;   `(RCOMB1 ,X0-L ,X0-H ,i ,Y0-H ,Y3-H ,Y2-L ,Y1-L
-;;    (RCOMB1 ,X1-L ,X1-H ,i ,Y1-H ,Y0-H ,Y3-L ,Y2-L
-;;    (RCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y1-H ,Y0-L ,Y3-L
-;;    (RCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y2-H ,Y1-L ,Y0-L
-;;    ,body)))))
-(define-syntax RROUND
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((i (list-ref form 1)) (X0-L (list-ref form 2))
-           (X0-H (list-ref form 3)) (X1-L (list-ref form 4))
-           (X1-H (list-ref form 5)) (X2-L (list-ref form 6))
-           (X2-H (list-ref form 7)) (X3-L (list-ref form 8))
-           (X3-H (list-ref form 9)) (Y0-L (list-ref form 10))
-           (Y0-H (list-ref form 11)) (Y1-L (list-ref form 12))
-           (Y1-H (list-ref form 13)) (Y2-L (list-ref form 14))
-           (Y2-H (list-ref form 15)) (Y3-L (list-ref form 16))
-           (Y3-H (list-ref form 17)) (body (list-ref form 18)))
-       `(RCOMB1 ,X0-L
-                ,X0-H
-                ,i
-                ,Y0-H
-                ,Y3-H
-                ,Y2-L
-                ,Y1-L
-                (RCOMB1 ,X1-L
-                        ,X1-H
-                        ,i
-                        ,Y1-H
-                        ,Y0-H
-                        ,Y3-L
-                        ,Y2-L
-                        (RCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y1-H ,Y0-L ,Y3-L
-                                (RCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y2-H ,Y1-L ,Y0-L ,body))))))))
+;; (define-syntax RROUND
+;;   (rsc-macro-transformer
+;;    (lambda (form env)
+;;      (let ((i (list-ref form 1)) (X0-L (list-ref form 2))
+;;            (X0-H (list-ref form 3)) (X1-L (list-ref form 4))
+;;            (X1-H (list-ref form 5)) (X2-L (list-ref form 6))
+;;            (X2-H (list-ref form 7)) (X3-L (list-ref form 8))
+;;            (X3-H (list-ref form 9)) (Y0-L (list-ref form 10))
+;;            (Y0-H (list-ref form 11)) (Y1-L (list-ref form 12))
+;;            (Y1-H (list-ref form 13)) (Y2-L (list-ref form 14))
+;;            (Y2-H (list-ref form 15)) (Y3-L (list-ref form 16))
+;;            (Y3-H (list-ref form 17)) (body (list-ref form 18)))
+;;        `(RCOMB1 ,X0-L
+;;                 ,X0-H
+;;                 ,i
+;;                 ,Y0-H
+;;                 ,Y3-H
+;;                 ,Y2-L
+;;                 ,Y1-L
+;;                 (RCOMB1 ,X1-L
+;;                         ,X1-H
+;;                         ,i
+;;                         ,Y1-H
+;;                         ,Y0-H
+;;                         ,Y3-L
+;;                         ,Y2-L
+;;                         (RCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y1-H ,Y0-L ,Y3-L
+;;                                 (RCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y2-H ,Y1-L ,Y0-L ,body))))))))
+(define-macro (RROUND i
+                      X0-L X0-H X1-L X1-H X2-L X2-H X3-L X3-H
+                      Y0-L Y0-H Y1-L Y1-H Y2-L Y2-H Y3-L Y3-H
+                      body)
+  `(RCOMB1 ,X0-L ,X0-H ,i ,Y0-H ,Y3-H ,Y2-L ,Y1-L
+   (RCOMB1 ,X1-L ,X1-H ,i ,Y1-H ,Y0-H ,Y3-L ,Y2-L
+   (RCOMB1 ,X2-L ,X2-H ,i ,Y2-H ,Y1-H ,Y0-L ,Y3-L
+   (RCOMB1 ,X3-L ,X3-H ,i ,Y3-H ,Y2-H ,Y1-L ,Y0-L
+   ,body)))))
 
 (define (aes-decrypt-ecb context input istart output ostart)
   (let ((RK (aes-context-drk context)))
